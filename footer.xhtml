@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<h:head>
+		<script type="text/javascript"
+			src="http://jquery-datatables-row-grouping.googlecode.com/svn/trunk/media/js/jquery.min.js" />
+		<script type="text/javascript"
+			src="http://jquery-datatables-row-grouping.googlecode.com/svn/trunk/media/js/jquery.dataTables.min.js" />
+		<script type="text/javascript"
+			src="http://jquery-datatables-row-grouping.googlecode.com/svn/trunk/media/js/jquery-ui.js" />
+		<script type="text/javascript"
+			src="http://jquery-datatables-row-grouping.googlecode.com/svn/trunk/media/js/jquery.dataTables.rowGrouping.js" />
+
+	</h:head>
+	<body>
+		<h:form method="post">
+			<rich:panel>
+				<h:inputText value="#{test.criteria}" />
+				<h:commandButton value="Render Page" action="#{test.renderPage}"
+					render="@form" />
+			</rich:panel>
+			<rich:panel>
+				<br></br>
+				<h:selectOneMenu >
+					<f:selectItem itemLabel="3" itemValue="3" />
+					<f:selectItem itemLabel="6" itemValue="6" />
+					<f:selectItem itemLabel="9" itemValue="9" />
+					<f:selectItem itemLabel="12" itemValue="12" />
+					<a4j:ajax event="change" listener="#{listenerBean.valueChange}"
+						render="@form">
+					</a4j:ajax>
+				</h:selectOneMenu>
+
+				<rich:dataTable id="riskData" rowclasses="greyBg, whiteBg"
+					styleclass="tablesorter" value="#{test.dataModel}" var="item"
+					rowkeyvar="row" rows="3" width="674" border="0" cellspacing="0"
+					cellpadding="0" sortMode="single">
+
+					<rich:column sortBy="#{item.busName}" sortOrder="#{sortBean.order}">
+						<f:facet name="header" />
+						<rich:dropDownMenu mode="ajax" direction="bottomRight"
+							jointPoint="topRight" showEvent="click">
+							<f:facet name="label">
+								<h:graphicImage value="/disc.gif" />
+							</f:facet>
+							<rich:menuItem id="testMenuId" label="View Mod Summary" mode="ajax"
+								action="#{test.popupPanel()}" render="modSumPanel"
+								oncomplete="#{rich:component('modSumPanel')}.show();">
+								<f:facet name="icon">
+									<h:graphicImage value="/song.gif" />
+								</f:facet>
+								<a4j:param name="rowKey" value="#{item.riskID}"></a4j:param>
+							</rich:menuItem>
+						</rich:dropDownMenu>
+
+					</rich:column>
+
+
+					<rich:column sortBy="#{item.busName}" sortOrder="#{sortBean.order}">
+						<f:facet name="header">
+							<a4j:commandLink value="BUSINESS NAME"
+								action="#{sortBean.sortByBus}" immediate="true"
+								render="riskData" />
+						</f:facet>
+						<h:outputText value="#{item.busName}">
+						</h:outputText>
+					</rich:column>
+
+					<rich:column sortBy="#{item.regionName}"
+						sortOrder="#{sortBean.orderRegion}">
+						<f:facet name="header">
+							<a4j:commandLink value="REGION NAME"
+								action="#{sortBean.sortByRegion}" limitrender="riskData" />
+						</f:facet>
+						<h:outputText value="#{item.regionName}">
+						</h:outputText>
+					</rich:column>
+
+
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="RISK ID" />
+						</f:facet>
+						<h:outputText value="#{item.riskID}" />
+					</rich:column>
+					<rich:column sortBy="#{item.policy.date}"
+						sortOrder="#{sortBean.orderPolicyDt}">
+						<f:facet name="header">
+							<a4j:commandLink value="REGION NAME" immediate="true"
+								action="#{sortBean.sortByPolicyDt}" render="@form" />
+						</f:facet>
+						<h:outputText value="#{item.policy.date}">
+						</h:outputText>
+					</rich:column>
+
+				</rich:dataTable>
+				<h:outputText value="Search Results Not Found"
+					rendered="#{empty test.dataModel.cachedList}" />
+				<br />
+				<rich:dataScroller for="riskData" maxpages="10" id="dsBtm"
+					fastcontrols="hide" renderifsinglepage="false" rerender="dsTop"
+					rendered="#{not empty test.dataModel.cachedList}"></rich:dataScroller>
+			</rich:panel>
+
+
+		</h:form>
+		<rich:popupPanel modal="false" autosized="true" moveable="true"
+			style="background-color:white;" id="modSumPanel">
+			<f:facet name="header">
+				<h:outputText value="Header" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="/disc.gif" style="cursor:pointer"
+					onclick="#{rich:component('modSumPanel')}.hide(); return false;" />
+			</f:facet>
+			<div>
+				<table>
+					<tr>
+						<td>#{test.busItem.riskID}</td>
+						<td>#{test.busItem.busName}</td>
+					</tr>
+					<tr>
+						<td>#{test.busItem.regionName}</td>
+						<td>#{test.busItem.policy.date}</td>
+					</tr>
+				</table>
+			</div>
+		</rich:popupPanel>
+	</body>
+</ui:composition>
