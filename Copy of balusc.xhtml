@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head></h:head>
+<body>
+	<rich:panel>
+		<h:form>
+			<!-- Set rows per page -->
+			<h:outputLabel value="Rows per page" />
+			<h:selectOneMenu id="rowsPerPage" value="#{myBean.rowsPerPage}">
+				<f:selectItem itemLabel="1" itemValue="1" />
+				<f:selectItem itemLabel="2" itemValue="2" />
+				<f:selectItem itemLabel="4" itemValue="4" />
+				<f:selectItem itemLabel="6" itemValue="6" />
+				<f:selectItem itemLabel="9" itemValue="9" />
+				<a4j:ajax event="change" listener="#{myBean.valueChange}"
+					render="@form">
+				</a4j:ajax>
+			</h:selectOneMenu>
+
+			<rich:dataTable value="#{myBean.dataList}" var="item">
+				<h:column>
+					<f:facet name="header">
+						<h:commandLink value="ID" actionListener="#{myBean.sort}">
+							<f:attribute name="sortField" value="id" />
+						</h:commandLink>
+					</f:facet>
+					<h:outputText value="#{item.riskID}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:commandLink value="Name" actionListener="#{myBean.sort}">
+							<f:attribute name="sortField" value="name" />
+						</h:commandLink>
+					</f:facet>
+					<h:outputText value="#{item.busName}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:commandLink value="Value" actionListener="#{myBean.sort}">
+							<f:attribute name="sortField" value="value" />
+						</h:commandLink>
+					</f:facet>
+					<h:outputText value="#{item.regionName}" />
+				</h:column>
+			</rich:dataTable>
+
+			<h:panelGroup>
+				<h:commandButton value="&lt;&lt;&lt;&lt;"
+					action="#{myBean.pageFirst}" disabled="#{myBean.firstRow == 1}" />
+				<h:commandButton value="&lt;" action="#{myBean.pagePrevious}"
+					disabled="#{myBean.firstRow == 1}" />
+
+				<a4j:repeat value="#{myBean.pages}" var="page">
+					<h:commandButton value="#{page}" actionListener="#{myBean.page}"
+						rendered="#{page != myBean.currentPage}" />
+					<h:commandButton disabled="true" value="#{page}"
+						rendered="#{page == myBean.currentPage}" />
+				</a4j:repeat>
+				<h:commandButton value="&gt;" action="#{myBean.pageNext}"
+					disabled="#{myBean.firstRow + myBean.rowsPerPage >= myBean.totalRows}" />
+				<h:commandButton value="&gt;&gt;&gt;&gt;"
+					action="#{myBean.pageLast}"
+					disabled="#{myBean.firstRow + myBean.rowsPerPage >= myBean.totalRows}" />
+
+			</h:panelGroup>
+			<h:outputText
+				value="Page #{myBean.currentPage} / #{myBean.totalPages}" />
+			<br />
+
+
+
+		</h:form>
+	</rich:panel>
+</body>
+</html>
